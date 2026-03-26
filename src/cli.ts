@@ -42,7 +42,7 @@ async function run(): Promise<void> {
     if (!activated) {
       console.log(fmt.heading("tate watch — not activated"));
       console.log(`  ${fmt.warn("watch mode requires a tate watch license")}\n`);
-      console.log(`  ${fmt.arrow("get yours at " + fmt.bold("https://tatertot.vercel.app/#pricing"))}`);
+      console.log(`  ${fmt.arrow("get yours at " + fmt.bold("https://tatertot-ochre.vercel.app/#pricing"))}`);
       console.log(`  ${fmt.arrow("then run: " + fmt.bold("npx tate-dev --activate YOUR_KEY"))}\n`);
       process.exit(1);
     }

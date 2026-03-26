@@ -42,7 +42,7 @@ export async function getKey(): Promise<string | null> {
 }
 
 export async function verify(key: string): Promise<{ valid: boolean; status?: string }> {
-  const VERIFY_URL = "https://tatertot.vercel.app/api/verify";
+  const VERIFY_URL = "https://tatertot-ochre.vercel.app/api/verify";
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000);
 
