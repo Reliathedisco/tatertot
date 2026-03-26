@@ -1,5 +1,5 @@
 {
-  "buildCommand": "echo 'static site — no build needed'",
-  "outputDirectory": "www",
+  "buildCommand": "cp -r www/. public/ 2>/dev/null; echo done",
+  "outputDirectory": "public",
   "cleanUrls": true
 }
