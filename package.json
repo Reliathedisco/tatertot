@@ -1,0 +1,34 @@
+{
+  "name": "tate-dev",
+  "version": "1.0.0",
+  "description": "Quick sanity check before debugging — is it your code, or something external?",
+  "type": "module",
+  "bin": {
+    "tate": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/cli.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "cli",
+    "diagnostics",
+    "devtools",
+    "status",
+    "health-check"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist",
+    "www"
+  ]
+}
