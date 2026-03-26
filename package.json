@@ -1,10 +1,11 @@
 {
   "name": "tate-dev",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Quick sanity check before debugging — is it your code, or something external?",
   "type": "module",
   "bin": {
-    "tate": "./dist/cli.js"
+    "tate": "./dist/cli.js",
+    "tate-dev": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsc",
