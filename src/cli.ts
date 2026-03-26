@@ -6,9 +6,10 @@ import { checkEnv } from "./checks/env.js";
 import { checkLocal } from "./checks/local.js";
 import { diagnose, Diagnosis } from "./diagnose.js";
 import { startWatch } from "./watch.js";
+import { activate, isActivated } from "./license.js";
 import * as fmt from "./format.js";
 
-const VERSION = "1.0.0";
+const VERSION = "1.0.1";
 
 async function run(): Promise<void> {
   const args = parseArgs(process.argv);
@@ -23,7 +24,28 @@ async function run(): Promise<void> {
     process.exit(0);
   }
 
+  if (args.activate) {
+    console.log(fmt.dim("\n  activating tate watch...\n"));
+    try {
+      await activate(args.activate);
+      console.log(fmt.line("ok", "license key saved", "~/.tate.json"));
+      console.log(fmt.line("ok", "tate watch activated"));
+      console.log(`\n  ${fmt.arrow("run " + fmt.bold("npx tate-dev --watch") + " to start monitoring")}\n`);
+    } catch (err: any) {
+      console.log(fmt.line("down", "activation failed", err.message));
+    }
+    process.exit(0);
+  }
+
   if (args.watch) {
+    const activated = await isActivated();
+    if (!activated) {
+      console.log(fmt.heading("tate watch — not activated"));
+      console.log(`  ${fmt.warn("watch mode requires a tate watch license")}\n`);
+      console.log(`  ${fmt.arrow("get yours at " + fmt.bold("https://tatertot-fvjgtoqwd-reliathediscos-projects.vercel.app/#pricing"))}`);
+      console.log(`  ${fmt.arrow("then run: " + fmt.bold("npx tate-dev --activate YOUR_KEY"))}\n`);
+      process.exit(1);
+    }
     await startWatch(args.watchInterval);
     return;
   }

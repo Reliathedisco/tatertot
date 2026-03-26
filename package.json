@@ -1,6 +1,6 @@
 {
   "name": "tate-dev",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Quick sanity check before debugging — is it your code, or something external?",
   "type": "module",
   "bin": {

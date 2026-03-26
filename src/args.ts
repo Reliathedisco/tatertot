@@ -5,6 +5,7 @@ export interface CliArgs {
   local: boolean;
   watch: boolean;
   watchInterval: number;
+  activate: string | null;
   help: boolean;
   version: boolean;
 }
@@ -12,6 +13,10 @@ export interface CliArgs {
 export function parseArgs(argv: string[]): CliArgs {
   const args = argv.slice(2);
   const has = (flag: string) => args.includes(flag);
+  const getVal = (flag: string): string | null => {
+    const idx = args.indexOf(flag);
+    return idx !== -1 && args[idx + 1] ? args[idx + 1] : null;
+  };
 
   const intervalIdx = args.indexOf("--interval");
   let watchInterval = 120_000; // 2 minutes default
@@ -31,6 +36,7 @@ export function parseArgs(argv: string[]): CliArgs {
     local: has("--local"),
     watch: has("--watch") || has("-w"),
     watchInterval,
+    activate: getVal("--activate"),
     help: has("--help") || has("-h"),
     version: has("--version") || has("-v"),
   };
@@ -44,13 +50,14 @@ export function printHelp(): void {
     npx tate-dev [flags]
 
   Flags:
-    --all         run all checks (default)
-    --services    only check external services
-    --env         only check environment variables
-    --local       only check local server
-    --watch, -w   background monitoring mode (paid)
-    --interval N  seconds between watch checks (default: 120)
-    --help, -h    show this help
-    --version, -v show version
+    --all           run all checks (default)
+    --services      only check external services
+    --env           only check environment variables
+    --local         only check local server
+    --watch, -w     background monitoring mode (paid)
+    --interval N    seconds between watch checks (default: 120)
+    --activate KEY  activate tate watch with your license key
+    --help, -h      show this help
+    --version, -v   show version
 `);
 }
