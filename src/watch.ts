@@ -39,23 +39,20 @@ function detectChanges(
     const prevStatus = prev.services.get(svc.name);
     if (prevStatus && prevStatus !== svc.status) {
       if (svc.status === "degraded" || svc.status === "down") {
-        changes.push(`${svc.name} changed: ${prevStatus} → ${svc.status}`);
+        changes.push(`${svc.name}: ${prevStatus} → ${svc.status}`);
       } else if (prevStatus === "degraded" || prevStatus === "down") {
-        changes.push(`${svc.name} recovered: ${prevStatus} → ${svc.status}`);
+        changes.push(`${svc.name}: recovered`);
       }
     }
   }
 
   if (prev.envStatus !== env.status && env.status !== "ok") {
-    changes.push(`env changed: ${prev.envStatus} → ${env.status}`);
+    changes.push(`env: ${prev.envStatus} → ${env.status}`);
   }
 
   if (prev.localStatus !== local.status) {
-    if (local.status === "down") {
-      changes.push("local server went down");
-    } else if (prev.localStatus === "down") {
-      changes.push("local server came back up");
-    }
+    if (local.status === "down") changes.push("server went down");
+    else if (prev.localStatus === "down") changes.push("server back up");
   }
 
   return changes;
@@ -68,7 +65,7 @@ function buildState(services: ServiceResult[], env: EnvResult, local: LocalResul
 }
 
 export async function startWatch(intervalMs: number): Promise<void> {
-  console.log(fmt.heading("tate watch — monitoring your stack"));
+  console.log(fmt.heading("tate watch"));
   console.log(fmt.dim(`  checking every ${Math.round(intervalMs / 1000)}s • ctrl+c to stop\n`));
 
   let prevState: WatchState | null = null;
@@ -84,45 +81,39 @@ export async function startWatch(intervalMs: number): Promise<void> {
       checkLocal(),
     ]);
 
-    const diagnosis = diagnose(services, env, local);
+    const d = diagnose(services, env, local);
     const currentState = buildState(services, env, local);
 
     if (prevState) {
       const changes = detectChanges(prevState, services, env, local);
 
       if (changes.length > 0) {
-        console.log(`\n${fmt.dim(`[${timestamp}]`)} ${fmt.bold("status changed:")}`);
+        console.log(`\n${fmt.dim(`  [${timestamp}]`)} ${fmt.bold("change detected:")}`);
         for (const change of changes) {
-          console.log(`  ${fmt.arrow(change)}`);
+          console.log(fmt.arrow(change));
         }
+        console.log(fmt.watchVerdict(d.headline, d.cause, d.directive));
 
-        if (diagnosis.severity !== "ok") {
-          console.log(`  ${fmt.arrow(diagnosis.cause)}`);
-          notify(
-            "⚠ tate watch",
-            `don't debug right now — ${diagnosis.cause}`,
-          );
+        if (d.severity !== "ok") {
+          notify("⚠ tate", `${d.headline} — ${d.directive}`);
         } else {
-          notify("✓ tate watch", "all clear — systems recovered");
+          notify("✓ tate", "all clear — systems recovered");
         }
       } else {
-        process.stdout.write(fmt.dim(`\r  [${timestamp}] check #${checkCount} — no changes`));
+        process.stdout.write(fmt.dim(`\r  [${timestamp}] #${checkCount} — no changes`));
       }
     } else {
-      // First run: show full report
-      console.log(fmt.dim(`  [${timestamp}] initial check\n`));
+      console.log(fmt.dim(`  [${timestamp}] initial scan\n`));
       for (const svc of services) {
-        console.log(fmt.line(svc.status, svc.name, svc.detail));
+        console.log(fmt.svcLine(svc.status, svc.name, svc.latencyMs, svc.detail));
       }
-      console.log(fmt.line(env.status, "env variables", env.fileExists ? `${env.present.length} found` : "no .env file"));
-      console.log(fmt.line(local.status, "local server", local.detail));
+      console.log(fmt.line(env.status, "env", env.fileExists ? `${env.present.length} keys` : "no .env"));
+      console.log(fmt.line(local.status, "server", local.detail));
       console.log();
+      console.log(fmt.watchVerdict(d.headline, d.cause, d.directive));
 
-      if (diagnosis.severity !== "ok") {
-        console.log(`  ${fmt.arrow(diagnosis.cause)}`);
-        notify("tate watch started", diagnosis.cause);
-      } else {
-        console.log(`  ${fmt.arrow(fmt.ok("all systems healthy — watching for changes"))}`);
+      if (d.severity !== "ok") {
+        notify("tate watch", `${d.headline} — ${d.directive}`);
       }
     }
 

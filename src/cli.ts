@@ -4,12 +4,12 @@ import { parseArgs, printHelp } from "./args.js";
 import { checkServices } from "./checks/services.js";
 import { checkEnv } from "./checks/env.js";
 import { checkLocal } from "./checks/local.js";
-import { diagnose, Diagnosis } from "./diagnose.js";
+import { diagnose } from "./diagnose.js";
 import { startWatch } from "./watch.js";
 import { activate, isActivated } from "./license.js";
 import * as fmt from "./format.js";
 
-const VERSION = "1.0.1";
+const VERSION = "2.0.0";
 
 async function run(): Promise<void> {
   const args = parseArgs(process.argv);
@@ -42,75 +42,76 @@ async function run(): Promise<void> {
     if (!activated) {
       console.log(fmt.heading("tate watch — not activated"));
       console.log(`  ${fmt.warn("watch mode requires a tate watch license")}\n`);
-      console.log(`  ${fmt.arrow("get yours at " + fmt.bold("https://tatertot-ochre.vercel.app/#pricing"))}`);
-      console.log(`  ${fmt.arrow("then run: " + fmt.bold("npx tate-dev --activate YOUR_KEY"))}\n`);
+      console.log(`${fmt.arrow("get yours at " + fmt.bold("https://tatertot-ochre.vercel.app/#pricing"))}`);
+      console.log(`${fmt.arrow("then run: " + fmt.bold("npx tate-dev --activate YOUR_KEY"))}\n`);
       process.exit(1);
     }
     await startWatch(args.watchInterval);
     return;
   }
 
+  const start = Date.now();
   console.log(fmt.brain());
 
   const runServices = args.all || args.services;
   const runEnv = args.all || args.env;
   const runLocal = args.all || args.local;
 
-  const promises: [
-    Promise<Awaited<ReturnType<typeof checkServices>> | null>,
-    Promise<Awaited<ReturnType<typeof checkEnv>> | null>,
-    Promise<Awaited<ReturnType<typeof checkLocal>> | null>,
-  ] = [
+  const [services, env, local] = await Promise.all([
     runServices ? checkServices() : Promise.resolve(null),
     runEnv ? checkEnv() : Promise.resolve(null),
     runLocal ? checkLocal() : Promise.resolve(null),
-  ];
+  ]);
 
-  const [services, env, local] = await Promise.all(promises);
+  const elapsed = Date.now() - start;
 
-  // --- ENV ---
-  if (env) {
-    if (!env.fileExists) {
-      console.log(fmt.line("down", "env variables", "no .env file found"));
-    } else if (env.empty.length > 0) {
-      console.log(fmt.line("degraded", "env variables loaded", `${env.empty.length} empty`));
-    } else if (env.present.length > 0) {
-      console.log(fmt.line("ok", "env variables loaded", `${env.present.length} keys found`));
-    } else {
-      console.log(fmt.line("degraded", "env variables", "no common keys detected"));
+  // --- LOCAL SETUP GROUP ---
+  if (env || local) {
+    console.log(fmt.groupLabel("local"));
+
+    if (env) {
+      if (!env.fileExists) {
+        console.log(fmt.line("down", "env", "no .env file found"));
+      } else if (env.empty.length > 0) {
+        console.log(fmt.line("degraded", "env", `${env.present.length} loaded, ${env.empty.length} empty`));
+      } else if (env.present.length > 0) {
+        console.log(fmt.line("ok", "env", `${env.present.length} keys loaded`));
+      } else {
+        console.log(fmt.line("degraded", "env", "no recognized keys"));
+      }
+    }
+
+    if (local) {
+      if (local.serverRunning) {
+        const health = local.healthEndpoint === "ok" ? " • /api/health ok" : "";
+        console.log(fmt.line("ok", "server", `${local.detail}${health}`));
+      } else {
+        console.log(fmt.line("down", "server", "not running"));
+      }
     }
   }
 
-  // --- LOCAL ---
-  if (local) {
-    if (local.serverRunning) {
-      const healthNote = local.healthEndpoint === "ok" ? "health endpoint ok" : "";
-      console.log(fmt.line("ok", `local server responding`, `${local.detail}${healthNote ? " • " + healthNote : ""}`));
-    } else {
-      console.log(fmt.line("down", "local server not running", local.detail));
-    }
-  }
-
-  // --- SERVICES ---
+  // --- SERVICES GROUP ---
   if (services) {
+    console.log(fmt.groupLabel("services"));
     for (const svc of services) {
-      const latency = svc.latencyMs ? `${svc.latencyMs}ms` : "";
-      const detail = [svc.detail, latency].filter(Boolean).join(" • ");
-      console.log(fmt.line(svc.status, svc.name, detail));
+      console.log(fmt.svcLine(svc.status, svc.name, svc.latencyMs, svc.detail));
     }
   }
 
-  // --- DIAGNOSIS ---
-  const diagnosis = diagnose(services, env, local);
-  console.log(fmt.separator());
-  printDiagnosis(diagnosis);
-}
+  // --- VERDICT ---
+  const d = diagnose(services, env, local);
 
-function printDiagnosis(d: Diagnosis): void {
-  const causePrefix = d.severity === "ok" ? fmt.ok("likely cause") : fmt.warn("likely cause");
-  console.log(`${fmt.arrow(`${causePrefix}: ${d.cause}`)}`);
-  console.log(`${fmt.arrow(`suggestion: ${d.suggestion}`)}`);
-  console.log();
+  console.log(fmt.verdictBlock(
+    d.headline,
+    d.cause,
+    d.directive,
+    d.confidence,
+    d.severity,
+    d.timeSaved,
+  ));
+
+  console.log(`\n  ${fmt.dim(`scanned in ${elapsed}ms`)}\n`);
 }
 
 run().catch((err) => {
