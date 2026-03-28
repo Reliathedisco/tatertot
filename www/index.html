@@ -3,22 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>tate — stop debugging what isn't broken</title>
+  <title>tate</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0a0a0c;
-      --surface: #111114;
-      --border: #1e1e24;
+      --bg: #08080a;
+      --surface: #0f0f12;
+      --border: #1a1a20;
       --text: #e8e6e3;
-      --text-dim: #6b6977;
+      --text-dim: #5a5868;
       --accent: #c4f863;
       --accent2: #f863c4;
       --accent3: #63c4f8;
       --warning: #f8c463;
-      --danger: #f86363;
       --mono: 'Space Mono', monospace;
       --display: 'Syne', sans-serif;
     }
@@ -30,7 +29,7 @@
       color: var(--text);
       font-family: var(--mono);
       font-size: 15px;
-      line-height: 1.7;
+      line-height: 1.8;
       overflow-x: hidden;
     }
 
@@ -44,62 +43,48 @@
       inset: 0;
       z-index: 9999;
       pointer-events: none;
-      opacity: 0.03;
+      opacity: 0.025;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
       background-size: 128px;
     }
 
+    .page {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* --- HERO --- */
     .hero {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 2rem;
+      padding-top: clamp(6rem, 18vh, 12rem);
+      padding-bottom: 4rem;
       position: relative;
     }
 
     .hero::before {
       content: '';
       position: absolute;
-      top: -20%;
-      right: -10%;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(196, 248, 99, 0.06) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .hero::after {
-      content: '';
-      position: absolute;
-      bottom: -10%;
-      left: -10%;
+      top: -10%;
+      right: -30%;
       width: 500px;
       height: 500px;
-      background: radial-gradient(circle, rgba(248, 99, 196, 0.04) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(196, 248, 99, 0.04) 0%, transparent 70%);
       pointer-events: none;
-    }
-
-    .container {
-      max-width: 720px;
-      margin: 0 auto;
-      position: relative;
-      z-index: 1;
     }
 
     .logo {
       font-family: var(--display);
-      font-size: clamp(4rem, 12vw, 8rem);
+      font-size: clamp(5rem, 15vw, 9rem);
       font-weight: 800;
-      letter-spacing: -0.04em;
-      line-height: 1;
-      margin-bottom: 0.5rem;
+      letter-spacing: -0.05em;
+      line-height: 0.9;
       background: linear-gradient(135deg, var(--accent) 0%, var(--accent3) 50%, var(--accent2) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       animation: shimmer 8s ease-in-out infinite;
       background-size: 200% 200%;
+      margin-bottom: 2.5rem;
     }
 
     @keyframes shimmer {
@@ -107,25 +92,58 @@
       50% { background-position: 100% 50%; }
     }
 
-    .tagline {
-      font-family: var(--display);
-      font-size: clamp(1.1rem, 3vw, 1.4rem);
-      font-weight: 400;
+    .hero-poem {
       color: var(--text-dim);
-      margin-bottom: 3rem;
+      font-size: 0.95rem;
+      line-height: 2;
     }
 
-    .tagline em {
+    .hero-poem em {
+      color: var(--text);
+      font-style: normal;
+    }
+
+    .hero-poem .accent {
       color: var(--accent);
       font-style: normal;
     }
 
+    /* --- INSTALL --- */
+    .install-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 3rem 0;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .install-box:hover { border-color: var(--accent); }
+
+    .install-box code {
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 1.05rem;
+    }
+
+    .install-box .copy-hint {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    /* --- TERMINAL --- */
     .terminal {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 1.5rem;
-      margin: 2.5rem 0;
+      margin: 1rem 0 4rem;
       position: relative;
       overflow: hidden;
     }
@@ -134,223 +152,173 @@
       content: '● ● ●';
       display: block;
       color: var(--text-dim);
-      font-size: 10px;
+      font-size: 9px;
       letter-spacing: 4px;
       margin-bottom: 1rem;
-      opacity: 0.5;
+      opacity: 0.4;
     }
 
     .terminal-line {
       opacity: 0;
       animation: typeIn 0.3s ease forwards;
+      font-size: 0.85rem;
     }
 
     .terminal-line:nth-child(2) { animation-delay: 0.2s; }
     .terminal-line:nth-child(3) { animation-delay: 0.5s; }
     .terminal-line:nth-child(4) { animation-delay: 0.8s; }
     .terminal-line:nth-child(5) { animation-delay: 1.1s; }
-    .terminal-line:nth-child(6) { animation-delay: 1.4s; }
-    .terminal-line:nth-child(7) { animation-delay: 1.7s; }
-    .terminal-line:nth-child(8) { animation-delay: 2.0s; }
-    .terminal-line:nth-child(9) { animation-delay: 2.3s; }
-    .terminal-line:nth-child(10) { animation-delay: 2.6s; }
-    .terminal-line:nth-child(11) { animation-delay: 2.9s; }
-    .terminal-line:nth-child(12) { animation-delay: 3.2s; }
-    .terminal-line:nth-child(13) { animation-delay: 3.5s; }
-    .terminal-line:nth-child(14) { animation-delay: 3.8s; }
+    .terminal-line:nth-child(6) { animation-delay: 1.3s; }
+    .terminal-line:nth-child(7) { animation-delay: 1.5s; }
+    .terminal-line:nth-child(8) { animation-delay: 1.7s; }
+    .terminal-line:nth-child(9) { animation-delay: 1.9s; }
+    .terminal-line:nth-child(10) { animation-delay: 2.2s; }
+    .terminal-line:nth-child(11) { animation-delay: 2.5s; }
+    .terminal-line:nth-child(12) { animation-delay: 2.8s; }
+    .terminal-line:nth-child(13) { animation-delay: 3.1s; }
+    .terminal-line:nth-child(14) { animation-delay: 3.4s; }
 
     @keyframes typeIn {
-      from { opacity: 0; transform: translateY(4px); }
+      from { opacity: 0; transform: translateY(3px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     .t-cmd { color: var(--text-dim); }
-    .t-brain { color: var(--accent2); }
     .t-ok { color: var(--accent); }
     .t-warn { color: var(--warning); }
-    .t-err { color: var(--danger); }
-    .t-arrow { color: var(--accent2); }
-    .t-dim { color: var(--text-dim); opacity: 0.6; }
+    .t-dim { color: var(--text-dim); opacity: 0.5; }
 
+    /* --- SECTIONS --- */
     .section {
-      padding: 6rem 2rem;
+      padding: 5rem 0;
     }
 
-    .section-title {
-      font-family: var(--display);
-      font-size: clamp(1.8rem, 5vw, 2.8rem);
-      font-weight: 700;
-      margin-bottom: 1rem;
-      letter-spacing: -0.02em;
+    .section-line {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
     }
 
-    .section-sub {
+    .poem-block {
       color: var(--text-dim);
-      margin-bottom: 3rem;
-      max-width: 500px;
+      font-size: 0.95rem;
+      line-height: 2.2;
     }
 
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin-top: 2rem;
+    .poem-block em {
+      color: var(--text);
+      font-style: normal;
     }
 
-    .feature-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      transition: border-color 0.3s, transform 0.2s;
-    }
-
-    .feature-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
-    }
-
-    .feature-icon {
-      font-size: 1.6rem;
-      margin-bottom: 0.75rem;
-      display: block;
-    }
-
-    .feature-card h3 {
-      font-family: var(--display);
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    .feature-card p {
-      color: var(--text-dim);
-      font-size: 0.85rem;
-    }
-
-    .free-tag {
-      display: inline-block;
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      padding: 2px 8px;
-      border-radius: 4px;
-      background: rgba(196, 248, 99, 0.1);
+    .poem-block .accent {
       color: var(--accent);
-      margin-left: 0.5rem;
-      vertical-align: middle;
     }
 
-    .paid-tag {
-      display: inline-block;
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      padding: 2px 8px;
-      border-radius: 4px;
-      background: rgba(248, 99, 196, 0.1);
+    .poem-block .pink {
       color: var(--accent2);
-      margin-left: 0.5rem;
-      vertical-align: middle;
     }
 
-    .pricing-section {
-      padding: 6rem 2rem;
-      text-align: center;
+    .poem-block .blue {
+      color: var(--accent3);
     }
 
-    .pricing-cards {
+    .verdicts {
+      margin: 2.5rem 0;
+    }
+
+    .verdict-item {
+      font-family: var(--display);
+      font-size: clamp(1.1rem, 3vw, 1.35rem);
+      font-weight: 700;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.2s;
+    }
+
+    .verdict-item:first-child { border-top: 1px solid var(--border); }
+    .verdict-item:hover { color: var(--accent); }
+
+    .verdict-item .v-dim {
+      color: var(--text-dim);
+      font-weight: 400;
+      font-size: 0.8rem;
+      font-family: var(--mono);
+    }
+
+    /* --- WATCH --- */
+    .watch-section {
+      padding: 5rem 0;
+    }
+
+    .watch-title {
+      font-family: var(--display);
+      font-size: clamp(2rem, 6vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 2rem;
+      color: var(--accent2);
+    }
+
+    /* --- PRICING --- */
+    .pricing {
+      padding: 5rem 0 3rem;
+    }
+
+    .pricing-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-      max-width: 700px;
-      margin: 3rem auto 0;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 2.5rem;
     }
 
     .price-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2.5rem 2rem;
-      text-align: left;
-      position: relative;
+      border-radius: 14px;
+      padding: 2.2rem 1.8rem;
       transition: border-color 0.3s;
     }
 
     .price-card.featured {
       border-color: var(--accent2);
-      box-shadow: 0 0 60px rgba(248, 99, 196, 0.08);
-    }
-
-    .price-card.featured::before {
-      content: '✦ popular';
-      position: absolute;
-      top: -10px;
-      right: 1.5rem;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      padding: 4px 12px;
-      border-radius: 6px;
-      background: var(--accent2);
-      color: var(--bg);
-      font-weight: 700;
     }
 
     .price-label {
       font-family: var(--display);
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-dim);
-      margin-bottom: 0.75rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
     }
 
     .price-amount {
       font-family: var(--display);
-      font-size: 3rem;
+      font-size: 2.4rem;
       font-weight: 800;
-      line-height: 1;
-      margin-bottom: 0.25rem;
+      line-height: 1.1;
+      margin-bottom: 0.2rem;
     }
 
     .price-amount span {
-      font-size: 1rem;
+      font-size: 0.85rem;
       font-weight: 400;
       color: var(--text-dim);
     }
 
     .price-desc {
       color: var(--text-dim);
-      font-size: 0.82rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .price-features {
-      list-style: none;
-      margin-bottom: 2rem;
-    }
-
-    .price-features li {
-      padding: 0.35rem 0;
-      font-size: 0.85rem;
-      color: var(--text);
-    }
-
-    .price-features li::before {
-      content: '→ ';
-      color: var(--accent2);
+      font-size: 0.8rem;
+      margin-bottom: 1.8rem;
+      line-height: 1.6;
     }
 
     .btn {
-      display: inline-block;
+      display: block;
       width: 100%;
       text-align: center;
-      padding: 0.85rem 2rem;
+      padding: 0.8rem;
       border-radius: 8px;
       font-family: var(--mono);
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 700;
       text-decoration: none;
       transition: all 0.2s;
@@ -366,7 +334,7 @@
     .btn-primary:hover {
       background: #ff7ad4;
       transform: translateY(-1px);
-      box-shadow: 0 4px 20px rgba(248, 99, 196, 0.3);
+      box-shadow: 0 4px 24px rgba(248, 99, 196, 0.25);
     }
 
     .btn-ghost {
@@ -380,78 +348,12 @@
       color: var(--accent);
     }
 
-    .install-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem 1.5rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 1rem;
-      margin: 2rem 0;
-      cursor: pointer;
-      transition: border-color 0.2s;
-    }
-
-    .install-box:hover {
-      border-color: var(--accent);
-    }
-
-    .install-box code {
-      color: var(--accent);
-      font-family: var(--mono);
-      font-size: 1rem;
-    }
-
-    .install-box .copy-hint {
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
-    .how-it-works {
-      counter-reset: step;
-    }
-
-    .step {
-      display: flex;
-      gap: 1.5rem;
-      margin-bottom: 2.5rem;
-      align-items: flex-start;
-    }
-
-    .step-num {
-      flex-shrink: 0;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--display);
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: var(--accent);
-    }
-
-    .step h3 {
-      font-family: var(--display);
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-    }
-
-    .step p {
-      color: var(--text-dim);
-      font-size: 0.85rem;
-    }
-
+    /* --- FOOTER --- */
     .footer {
-      padding: 3rem 2rem;
+      padding: 4rem 0;
       text-align: center;
       color: var(--text-dim);
-      font-size: 0.8rem;
+      font-size: 0.75rem;
     }
 
     .footer a {
@@ -459,97 +361,63 @@
       text-decoration: none;
     }
 
-    .marquee {
-      overflow: hidden;
-      padding: 1rem 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      margin: 4rem 0;
-    }
-
-    .marquee-inner {
-      display: flex;
-      gap: 3rem;
-      animation: scroll 20s linear infinite;
-      width: max-content;
-    }
-
-    .marquee-item {
-      font-family: var(--display);
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-dim);
-      white-space: nowrap;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
-    @keyframes scroll {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
-    }
-
-    .blob {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.07;
-      pointer-events: none;
-      animation: float 12s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(20px, -30px) scale(1.05); }
-      66% { transform: translate(-15px, 20px) scale(0.95); }
-    }
-
-    .manifesto {
-      padding: 6rem 2rem;
-      position: relative;
-    }
-
-    .manifesto blockquote {
-      font-family: var(--display);
-      font-size: clamp(1.3rem, 4vw, 2rem);
-      font-weight: 600;
-      line-height: 1.5;
-      max-width: 600px;
-      margin: 0 auto;
-      text-align: center;
-      position: relative;
-    }
-
-    .manifesto blockquote::before {
-      content: '"';
-      font-size: 6rem;
-      position: absolute;
-      top: -2rem;
-      left: -1.5rem;
-      color: var(--accent);
-      opacity: 0.2;
-      font-family: var(--display);
-      line-height: 1;
-    }
-
     @media (max-width: 600px) {
-      .hero { padding: 1.5rem; }
-      .section { padding: 4rem 1.5rem; }
+      .pricing-grid { grid-template-columns: 1fr; }
       .terminal { padding: 1rem; }
-      .pricing-cards { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="grain"></div>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="container">
-      <div class="logo">tate</div>
-      <p class="tagline">stop debugging what <em>isn't broken</em></p>
+  <div class="page">
 
-      <div class="terminal" aria-label="Demo terminal output">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="logo">tate</div>
+      <div class="hero-poem">
+        <em>is it your code</em><br>
+        or is it something else
+      </div>
+
+      <div class="install-box" onclick="navigator.clipboard.writeText('npx tate-dev'); this.querySelector('.copy-hint').textContent = 'copied!'">
+        <code>npx tate-dev</code>
+        <span class="copy-hint">click to copy</span>
+      </div>
+    </section>
+
+    <hr class="section-line">
+
+    <!-- THE PROBLEM -->
+    <section class="section">
+      <div class="poem-block">
+        your app breaks<br>
+        you assume it's you<br>
+        <br>
+        you start digging<br>
+        restarting<br>
+        rewriting things that probably weren't wrong<br>
+        <br>
+        <em>half the time</em><br>
+        <span class="accent">it's not even your fault</span>
+      </div>
+    </section>
+
+    <hr class="section-line">
+
+    <!-- WHAT IT CHECKS -->
+    <section class="section">
+      <div class="poem-block">
+        tate checks:<br>
+        <br>
+        <em>env</em><br>
+        <em>local server</em><br>
+        <em>external services</em><br>
+        <br>
+        and just tells you the truth
+      </div>
+
+      <div class="terminal">
         <div class="terminal-line"><span class="t-cmd">$ npx tate-dev</span></div>
         <div class="terminal-line"><br></div>
         <div class="terminal-line"><span class="t-dim">  local</span></div>
@@ -557,218 +425,91 @@
         <div class="terminal-line"><span class="t-ok">  ✓</span> server &nbsp;&nbsp;localhost:3000</div>
         <div class="terminal-line"><span class="t-dim">  services</span></div>
         <div class="terminal-line"><span class="t-ok">  ✓</span> stripe &nbsp;&nbsp;<span class="t-dim">85ms</span></div>
-        <div class="terminal-line"><span class="t-warn">  ⚠</span> openai &nbsp;&nbsp;<span class="t-dim">1204ms</span> <span class="t-dim">• partial outage</span></div>
+        <div class="terminal-line"><span class="t-warn">  ⚠</span> openai &nbsp;&nbsp;<span class="t-dim">1204ms • partial outage</span></div>
         <div class="terminal-line"><span class="t-ok">  ✓</span> github &nbsp;&nbsp;<span class="t-dim">63ms</span></div>
         <div class="terminal-line"><span class="t-dim">  ────────────────────────────────</span></div>
         <div class="terminal-line"><span class="t-warn" style="font-weight:700;">  probably not your code</span></div>
         <div class="terminal-line"><span class="t-dim">  confidence &nbsp;</span><span class="t-ok">78%</span> <span class="t-ok">███████</span><span class="t-dim">░░░</span></div>
-        <div class="terminal-line"><span style="color:var(--text);font-weight:700;">  → if your bug involves openai, wait — otherwise debug normally</span></div>
-        <div class="terminal-line"><span class="t-dim">  ⏱ saved you ~15–30 min of debugging</span></div>
+        <div class="terminal-line"><span style="color:var(--text);font-weight:700;">  → wait for openai, or mock responses</span></div>
+        <div class="terminal-line"><span class="t-dim">  ⏱ saved you ~15–30 min</span></div>
+      </div>
+    </section>
+
+    <hr class="section-line">
+
+    <!-- VERDICTS -->
+    <section class="section">
+      <div class="verdicts">
+        <div class="verdict-item">this is NOT your code <span class="v-dim">— services are down</span></div>
+        <div class="verdict-item">your setup is broken <span class="v-dim">— missing .env</span></div>
+        <div class="verdict-item">your app isn't running <span class="v-dim">— no server detected</span></div>
+        <div class="verdict-item">yeah... this one's on you <span class="v-dim">— everything else is fine</span></div>
       </div>
 
-      <div class="install-box" onclick="navigator.clipboard.writeText('npx tate-dev'); this.querySelector('.copy-hint').textContent = 'copied!'">
-        <code>npx tate-dev</code>
+      <div class="poem-block">
+        no guessing<br>
+        no spiral
+      </div>
+    </section>
+
+    <hr class="section-line">
+
+    <!-- WATCH -->
+    <section class="watch-section">
+      <div class="watch-title">tate watch</div>
+      <div class="poem-block">
+        runs quietly in the background<br>
+        <br>
+        tells you when things <em>break</em><br>
+        tells you when they're <em>fixed</em><br>
+        <br>
+        so you don't waste time<br>
+        debugging nothing
+      </div>
+
+      <div class="install-box" onclick="navigator.clipboard.writeText('npx tate-dev --watch'); this.querySelector('.copy-hint').textContent = 'copied!'">
+        <code>npx tate-dev --watch</code>
         <span class="copy-hint">click to copy</span>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- MARQUEE -->
-  <div class="marquee">
-    <div class="marquee-inner">
-      <span class="marquee-item">stripe</span>
-      <span class="marquee-item">openai</span>
-      <span class="marquee-item">supabase</span>
-      <span class="marquee-item">vercel</span>
-      <span class="marquee-item">clerk</span>
-      <span class="marquee-item">resend</span>
-      <span class="marquee-item">github</span>
-      <span class="marquee-item">•</span>
-      <span class="marquee-item">env check</span>
-      <span class="marquee-item">port scan</span>
-      <span class="marquee-item">health probe</span>
-      <span class="marquee-item">diagnosis</span>
-      <!-- duplicate for seamless loop -->
-      <span class="marquee-item">stripe</span>
-      <span class="marquee-item">openai</span>
-      <span class="marquee-item">supabase</span>
-      <span class="marquee-item">vercel</span>
-      <span class="marquee-item">clerk</span>
-      <span class="marquee-item">resend</span>
-      <span class="marquee-item">github</span>
-      <span class="marquee-item">•</span>
-      <span class="marquee-item">env check</span>
-      <span class="marquee-item">port scan</span>
-      <span class="marquee-item">health probe</span>
-      <span class="marquee-item">diagnosis</span>
-    </div>
-  </div>
+    <hr class="section-line">
 
-  <!-- HOW IT WORKS -->
-  <section class="section">
-    <div class="container">
-      <h2 class="section-title">how it works</h2>
-      <p class="section-sub">one command. instant clarity.</p>
-
-      <div class="how-it-works">
-        <div class="step">
-          <div class="step-num">1</div>
-          <div>
-            <h3>scan your environment</h3>
-            <p>checks for .env files, validates common API keys exist and aren't empty</p>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <div>
-            <h3>probe local server</h3>
-            <p>scans common ports (3000, 3001, 5173...) and hits /api/health if available</p>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-num">3</div>
-          <div>
-            <h3>check external services</h3>
-            <p>pings status pages for stripe, openai, supabase, vercel, clerk, resend, github</p>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-num">4</div>
-          <div>
-            <h3>deliver a diagnosis</h3>
-            <p>tells you what's wrong and whether to debug your code or wait it out</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FEATURES -->
-  <section class="section" style="background: var(--surface);">
-    <div class="container">
-      <h2 class="section-title">features</h2>
-      <p class="section-sub">everything you need, nothing you don't</p>
-
-      <div class="features">
-        <div class="feature-card">
-          <span class="feature-icon">🔍</span>
-          <h3>service status <span class="free-tag">free</span></h3>
-          <p>real-time status checks for 7+ services. know instantly if it's them, not you.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">🔑</span>
-          <h3>env audit <span class="free-tag">free</span></h3>
-          <p>scans .env files for missing or empty keys. catches config issues in seconds.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">🏠</span>
-          <h3>local health <span class="free-tag">free</span></h3>
-          <p>checks if your dev server is running and responding on common ports.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">🧠</span>
-          <h3>smart diagnosis <span class="free-tag">free</span></h3>
-          <p>combines all signals into a clear verdict: your code, config, or external.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">👁</span>
-          <h3>watch mode <span class="paid-tag">watch</span></h3>
-          <p>continuous background monitoring. checks every 2-5 minutes, only alerts on changes.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">🔔</span>
-          <h3>native alerts <span class="paid-tag">watch</span></h3>
-          <p>macOS notifications when something breaks. no browser tab needed.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">🧘</span>
-          <h3>"don't debug" alerts <span class="paid-tag">watch</span></h3>
-          <p>tells you when NOT to debug. saves you from chasing ghosts.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">⚡</span>
-          <h3>instant results <span class="free-tag">free</span></h3>
-          <p>full diagnosis in under 2 seconds. no accounts, no setup, no config.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- MANIFESTO -->
-  <section class="manifesto">
-    <div class="container">
-      <blockquote>
-        you don't need another monitoring dashboard.<br>
-        you need someone to tell you<br>
-        <em style="color: var(--accent);">"it's not your fault"</em>
-      </blockquote>
-    </div>
-  </section>
-
-  <!-- PRICING -->
-  <section class="pricing-section" id="pricing">
-    <div class="container">
-      <h2 class="section-title">simple pricing</h2>
-      <p class="section-sub" style="margin: 0 auto 1rem;">the cli is free forever. watch mode is peace of mind.</p>
-
-      <div class="pricing-cards">
+    <!-- PRICING -->
+    <section class="pricing" id="pricing">
+      <div class="pricing-grid">
         <div class="price-card">
-          <div class="price-label">tate cli</div>
-          <div class="price-amount">$0 <span>/ forever</span></div>
-          <p class="price-desc">quick sanity check before debugging</p>
-          <ul class="price-features">
-            <li>7 service status checks</li>
-            <li>environment audit</li>
-            <li>local server probe</li>
-            <li>smart diagnosis</li>
-            <li>all cli flags</li>
-          </ul>
-          <a href="#" class="btn btn-ghost" onclick="navigator.clipboard.writeText('npx tate-dev'); this.textContent = 'copied!'; return false;">npx tate</a>
+          <div class="price-label">tate</div>
+          <div class="price-amount">free</div>
+          <p class="price-desc">
+            env check<br>
+            local server<br>
+            7 service checks<br>
+            verdict + confidence
+          </p>
+          <a href="#" class="btn btn-ghost" onclick="navigator.clipboard.writeText('npx tate-dev'); this.textContent = 'copied!'; return false;">npx tate-dev</a>
         </div>
 
         <div class="price-card featured">
           <div class="price-label">tate watch</div>
-          <div class="price-amount">$3 <span>/ month</span></div>
-          <p class="price-desc">background monitoring + smart alerts</p>
-          <ul class="price-features">
-            <li>everything in free</li>
-            <li>continuous monitoring</li>
-            <li>macOS notifications</li>
-            <li>"don't debug" alerts</li>
-            <li>change detection (not spam)</li>
-            <li>coming soon: slack & discord</li>
-          </ul>
-          <a href="https://buy.stripe.com/8x29AVc0y4iHfrke6x4Ja0r" class="btn btn-primary">get tate watch →</a>
+          <div class="price-amount">$11.11 <span>/ mo</span></div>
+          <p class="price-desc">
+            everything in free<br>
+            background monitoring<br>
+            native notifications<br>
+            "don't debug" alerts
+          </p>
+          <a href="https://buy.stripe.com/7sY9AV6GebL91Au6E54Ja0s" id="watch-btn" class="btn btn-primary">get tate watch</a>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- INSTALL -->
-  <section class="section">
-    <div class="container" style="text-align: center;">
-      <h2 class="section-title">try it right now</h2>
-      <p class="section-sub" style="margin: 0 auto 2rem;">zero install. zero config. just answers.</p>
+    <!-- FOOTER -->
+    <footer class="footer">
+      <p><a href="https://github.com/Reliathedisco/tatertot">github</a> · <a href="#pricing">pricing</a></p>
+    </footer>
 
-      <div class="install-box" onclick="navigator.clipboard.writeText('npx tate-dev'); this.querySelector('.copy-hint').textContent = 'copied!'">
-        <code>npx tate-dev</code>
-        <span class="copy-hint">click to copy</span>
-      </div>
-
-      <p style="color: var(--text-dim); font-size: 0.8rem; margin-top: 2rem;">
-        requires node.js 18+
-      </p>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <p>built with anxiety and caffeine</p>
-    <p style="margin-top: 0.5rem;">
-      <a href="https://github.com">github</a> · 
-      <a href="#pricing">pricing</a>
-    </p>
-  </footer>
+  </div>
 
   <script>
     const observer = new IntersectionObserver((entries) => {
@@ -780,10 +521,10 @@
       });
     }, { threshold: 0.1 });
 
-    document.querySelectorAll('.feature-card, .price-card, .step').forEach(el => {
+    document.querySelectorAll('.section, .watch-section, .price-card, .pricing').forEach(el => {
       el.style.opacity = '0';
-      el.style.transform = 'translateY(20px)';
-      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      el.style.transform = 'translateY(16px)';
+      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
       observer.observe(el);
     });
   </script>
